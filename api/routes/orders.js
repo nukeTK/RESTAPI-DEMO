@@ -1,18 +1,13 @@
 const express = require("express");
 const router = express.Router();
 const mangoose = require("mongoose");
-const Order = require("../models/order");
-const Product = require("../models/product");
+const { orders_get_all } = require("../controllers/orders");
 
-router.get("/", (req, res, next) => {
-  Order.find()
-    .select("_id product quantity")
-    .populate('product','name') 
-    .exec()
-    .then((result) => {
-      res.status(200).json(result);
-    });
-});
+const Product = require("../models/product");
+const checkAuth = require("../middleware/check-auth");
+
+//for more ckeaner code we can can create controller folder and put all the logic over there
+router.get("/", checkAuth, orders_get_all); //example
 
 router.post("/", (req, res, next) => {
   Product.findById(req.body.productId)

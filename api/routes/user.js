@@ -3,7 +3,9 @@ const router = express.Router();
 const User = require("../models/user");
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
-
+const jwt = require("jsonwebtoken");
+require("dotenv").config();
+const { JWT_KEY } = process.env;
 router.post("/signup", (req, res, next) => {
   User.find({ email: req.body.email })
     .exec()
@@ -50,8 +52,17 @@ router.post("/login", (req, res, next) => {
           return res.status(400).json({ message: err });
         }
         if (result) {
+          const token = jwt.sign(
+            {
+              email: user[0].email,
+              userId: user[0]._id,
+            },
+            JWT_KEY,
+            { expiresIn: "1h" }
+          );
           return res.status(200).json({
             message: "user is logged in",
+            token:token
           });
         }
         res.status(401).json({

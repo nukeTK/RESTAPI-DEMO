@@ -3,7 +3,7 @@ const router = express.Router();
 const Product = require("../models/product");
 const mongoose = require("mongoose");
 const multer = require("multer");
-
+const checkAuth = require("../middleware/check-auth");
 /* const upload = multer({ dest: "./uploads/" }); */
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -15,7 +15,7 @@ const storage = multer.diskStorage({
 });
 
 const fileFilter = (req, file, cb) => {
-  if (file.mimetype ===  "image/png") {
+  if (file.mimetype === "image/png") {
     cb(null, true); // accept the file
   } else {
     cb(new Error("File not uploaded"), false); //reject file
@@ -57,18 +57,18 @@ router.get("/", (req, res, next) => {
     });
 });
 
-router.post("/", upload.single("productImage"), (req, res, next) => {
+router.post("/",checkAuth, upload.single("productImage"), (req, res, next) => {
   //using bodyparser to extract the incoming data from body of the request
   /* const product={
         name:req.body.name,
         price: req.body.price
     } */
-  console.log(req.file)
+  console.log(req.file);
   const product = new Product({
     _id: new mongoose.Types.ObjectId(),
     name: req.body.name,
     price: req.body.price,
-    productImage: req.file.path.replace(/\\/g, '/')
+    productImage: req.file.path.replace(/\\/g, "/"),
   });
   //save: mongoose predefined method to save the data into the database
   product
