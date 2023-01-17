@@ -20,8 +20,8 @@ mongoose.set("strictQuery", true);
 mongoose.connect(
   `mongodb+srv://taran1809:${MONGO_DBPASS}@cluster0.8ahilj1.mongodb.net/?retryWrites=true&w=majority`,
   {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
+   /*  useNewUrlParser: true,
+    useUnifiedTopology: true, */
   }
 );
 const con = mongoose.connection;
