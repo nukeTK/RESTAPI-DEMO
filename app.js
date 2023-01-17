@@ -7,6 +7,7 @@ const productRoutes = require("./api/routes/products");
 const orders = require("./api/routes/orders");
 require("dotenv").config();
 const path = require("path");
+const userRoutes = require("./api/routes/user");
 const { MONGO_DBPASS } = process.env;
 /* 
 app.use((req,res,next)=>{
@@ -49,6 +50,7 @@ app.use((req, res, next) => {
 
 app.use("/products", productRoutes);
 app.use("/orders", orders);
+app.use("/user", userRoutes);
 
 app.use((req, res, next) => {
   const error = new Error("Not Found");
