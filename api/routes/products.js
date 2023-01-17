@@ -7,20 +7,35 @@ const multer = require("multer");
 /* const upload = multer({ dest: "./uploads/" }); */
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'uploads');
+    cb(null, "uploads");
   },
   filename: (req, file, cb) => {
-    cb(null, Date.now() +  file.originalname);
+    cb(null, Date.now() + file.originalname);
   },
 });
-const upload = multer({ storage: storage });
+
+const fileFilter = (req, file, cb) => {
+  if (file.mimetype ===  "image/png") {
+    cb(null, true); // accept the file
+  } else {
+    cb(new Error("File not uploaded"), false); //reject file
+  }
+};
+
+const upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 1024 * 1024 * 5, //5 MB
+  },
+  fileFilter: fileFilter,
+});
 router.get("/", (req, res, next) => {
   /* res.status(200).json({
     message: "Handling GET request to /Products",
   }); */
   console.log(req.file);
   Product.find()
-    .select("name price _id")
+    .select("name price _id productImage")
     .exec()
     .then((doc) => {
       const response = {
@@ -30,6 +45,7 @@ router.get("/", (req, res, next) => {
             name: doc.name,
             price: doc.price,
             _id: doc._id,
+            productImage: doc.productImage,
             request: {
               type: "GET",
               url: "http://localhost:3000/products/" + doc._id,
@@ -42,16 +58,17 @@ router.get("/", (req, res, next) => {
 });
 
 router.post("/", upload.single("productImage"), (req, res, next) => {
-  //using bodyparser to extract the incoming data
+  //using bodyparser to extract the incoming data from body of the request
   /* const product={
         name:req.body.name,
         price: req.body.price
     } */
-  console.log(req.body.name, req.body.price);
+  console.log(req.file)
   const product = new Product({
     _id: new mongoose.Types.ObjectId(),
     name: req.body.name,
     price: req.body.price,
+    productImage: req.file.path.replace(/\\/g, '/')
   });
   //save: mongoose predefined method to save the data into the database
   product
@@ -63,6 +80,7 @@ router.post("/", upload.single("productImage"), (req, res, next) => {
           name: result.name,
           price: result.price,
           _id: result._id,
+          productImage: result.productImage,
           request: {
             type: "POST",
             url: "http://localhost:3000/products/" + result._id,
