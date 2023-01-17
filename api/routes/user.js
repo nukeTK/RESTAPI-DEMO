@@ -5,7 +5,7 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 
 router.post("/signup", (req, res, next) => {
-  bcrypt.hash(req.body.email, 10, (err, hash) => {
+  bcrypt.hash(req.body.password, 10, (err, hash) => {
     if (err) res.status(500).json({ error: err });
     else {
       const user = new User({
