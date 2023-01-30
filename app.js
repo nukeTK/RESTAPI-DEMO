@@ -8,22 +8,16 @@ const orders = require("./api/routes/orders");
 require("dotenv").config();
 const path = require("path");
 const userRoutes = require("./api/routes/user");
-const { MONGO_DBPASS } = process.env;
+
 /* 
 app.use((req,res,next)=>{
     res.status(200).json({
         message:"It works"
     });
 })   */
-//mongoose.connect('mongodb+srv://taran1809'+ process.env.file + '@cluster0.8ahilj1.mongodb.net/?retryWrites=true&w=majority')
+
 mongoose.set("strictQuery", true);
-mongoose.connect(
-  `mongodb+srv://taran1809:${MONGO_DBPASS}@cluster0.8ahilj1.mongodb.net/?retryWrites=true&w=majority`,
-  {
-   /*  useNewUrlParser: true,
-    useUnifiedTopology: true, */
-  }
-);
+mongoose.connect(process.env.MONGO_URL);
 const con = mongoose.connection;
 con.on("connected", function () {
   console.log("database is connected successfully");
